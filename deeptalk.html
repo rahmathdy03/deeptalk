@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeepTalk Night ✨</title>
+
+<style>
+body {
+margin: 0;
+height: 100vh;
+background:
+linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
+url('bg.jpg') center/cover no-repeat;
+display: flex;
+justify-content: center;
+align-items: center;
+font-family: 'Poppins', sans-serif;
+color: #fff;
+overflow: hidden;
+}
+
+.container {
+text-align: center;
+padding: 20px;
+backdrop-filter: blur(4px);
+}
+
+/* ===== CARD ===== */
+.card {
+width: 300px;
+height: 190px;
+perspective: 1200px;
+margin: 24px auto;
+cursor: pointer;
+}
+
+.card-inner {
+width: 100%;
+height: 100%;
+position: relative;
+transform-style: preserve-3d;
+transition: transform 0.8s;
+}
+
+.card.flip .card-inner {
+transform: rotateY(180deg);
+animation: jump 0.6s ease;
+}
+
+@keyframes jump {
+0% { transform: translateY(0) rotateY(0); }
+40% { transform: translateY(-25px) rotateY(90deg); }
+100% { transform: translateY(0) rotateY(180deg); }
+}
+
+.card-face {
+position: absolute;
+width: 100%;
+height: 100%;
+border-radius: 18px;
+backface-visibility: hidden;
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 18px;
+box-sizing: border-box;
+box-shadow: 0 15px 35px rgba(0,0,0,0.45);
+}
+
+.front {
+background: linear-gradient(135deg, #ffafbd, #ffc3a0);
+color: #3a2c2c;
+font-size: 1.15rem;
+font-weight: 600;
+}
+
+.back {
+background: linear-gradient(135deg, #667eea, #764ba2);
+color: #fff;
+transform: rotateY(180deg);
+font-size: 1rem;
+line-height: 1.4;
+}
+
+/* ===== BUTTON ===== */
+button {
+margin-top: 10px;
+padding: 10px 22px;
+border: none;
+border-radius: 25px;
+background: linear-gradient(135deg, #f6d365, #fda085);
+color: #333;
+font-size: 0.95rem;
+cursor: pointer;
+box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+}
+
+button:active {
+transform: scale(0.96);
+}
+
+/* ===== CLOCK ===== */
+.clock {
+position: fixed;
+bottom: 16px;
+right: 16px;
+padding: 10px 16px;
+border-radius: 14px;
+background: rgba(0,0,0,0.55);
+backdrop-filter: blur(6px);
+font-family: 'Courier New', monospace;
+font-size: 1.1rem;
+letter-spacing: 2px;
+color: #ffd36e;
+box-shadow: 0 0 15px rgba(255,211,110,0.5);
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h1>🌙 DeepTalk Night</h1>
+<p>Ambil satu kartu, jawab dengan jujur</p>
+
+<div class="card" onclick="flipCard()">
+<div class="card-inner">
+<div class="card-face front">
+🎴 Tap untuk membuka
+</div>
+<div class="card-face back" id="question">
+...
+</div>
+</div>
+</div>
+
+<button onclick="newCard()">Kartu Berikutnya</button>
+</div>
+
+<div class="clock" id="clock">00:00:00</div>
+
+<!-- BACKSOUND -->
+<audio id="bgm" preload="auto"></audio>
+
+<script>
+/* ===== QUESTIONS ===== */
+const questions = [
+"Momen apa dari kita yang paling ingin kamu ulang di tahun depan?",
+"Hal kecil apa dariku yang diam-diam paling kamu hargai?",
+"Di hubungan ini, kapan kamu merasa paling tenang sama aku?",
+"Apa satu hal tentang aku yang baru kamu sadari setelah kita pacaran?",
+"Kalau aku lagi capek atau bad mood, hal apa yang paling kamu harapin dari aku?",
+"Menurut kamu, apa kekuatan terbesar hubungan kita sejauh ini?",
+"Hal apa yang ingin kamu perbaiki atau kita pelajari bareng di tahun baru?",
+"Pernah nggak kamu takut kehilangan aku? Di situasi seperti apa?",
+"Apa arti komitmen buat kamu di tahap hubungan kita sekarang?",
+"Satu harapan paling jujur yang ingin kamu titipkan untuk kita di tahun depan?"
+];
+
+let usedQuestions = [];
+
+function flipCard() {
+document.querySelector('.card').classList.toggle('flip');
+}
+
+function newCard() {
+if (usedQuestions.length === questions.length) {
+usedQuestions = [];
+}
+
+let q;
+do {
+q = questions[Math.floor(Math.random() * questions.length)];
+} while (usedQuestions.includes(q));
+
+usedQuestions.push(q);
+
+document.querySelector('.card').classList.remove('flip');
+setTimeout(() => {
+document.getElementById('question').innerText = q;
+}, 350);
+}
+
+/* ===== CLOCK ===== */
+function updateClock() {
+const now = new Date();
+const h = String(now.getHours()).padStart(2, '0');
+const m = String(now.getMinutes()).padStart(2, '0');
+const s = String(now.getSeconds()).padStart(2, '0');
+document.getElementById('clock').innerText = `${h}:${m}:${s}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+/* ===== BACKSOUND ===== */
+const playlist = ["1.mp3", "2.mp3", "3.mp3"];
+let currentTrack = 0;
+const audio = document.getElementById("bgm");
+
+audio.volume = 0.4;
+audio.src = playlist[currentTrack];
+
+audio.addEventListener("ended", () => {
+currentTrack = (currentTrack + 1) % playlist.length;
+audio.src = playlist[currentTrack];
+audio.play();
+});
+
+// autoplay after first interaction (mobile safe)
+document.body.addEventListener("click", () => {
+if (audio.paused) audio.play();
+}, { once: true });
+</script>
+
+</body>
+</html>
