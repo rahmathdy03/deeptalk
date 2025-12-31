@@ -33,11 +33,9 @@ z-index: 10;
 #opening button {
 margin-top: 24px;
 padding: 12px 28px;
-border: none;
 border-radius: 30px;
+border: none;
 font-size: 1rem;
-background: #fff;
-color: #333;
 cursor: pointer;
 }
 
@@ -70,9 +68,9 @@ cursor: pointer;
 .card-inner {
 width: 100%;
 height: 100%;
-position: relative;
 transform-style: preserve-3d;
 transition: transform 0.8s;
+position: relative;
 }
 
 .card.flip .card-inner {
@@ -106,34 +104,39 @@ transform: rotateY(180deg);
 /* BUTTON */
 button {
 padding: 10px 22px;
-border: none;
 border-radius: 25px;
-background: #fff;
-color: #333;
+border: none;
 cursor: pointer;
-margin-top: 10px;
 }
 
-/* MESSAGE */
-#message {
-margin-top: 16px;
-font-size: 1rem;
+/* INFO */
+#message { margin-top: 10px; color: #ffd36e; }
+#counter { margin-top: 6px; font-size: 0.9rem; opacity: 0.9; }
+
+/* CLOCK */
+.clock {
+position: fixed;
+bottom: 16px;
+right: 16px;
+padding: 10px 16px;
+border-radius: 14px;
+background: rgba(0,0,0,0.55);
+font-family: monospace;
+font-size: 1.05rem;
 color: #ffd36e;
+box-shadow: 0 0 15px rgba(255,211,110,0.5);
 }
 
 /* WISHLIST */
-#wishlist {
-display: none;
-}
-
+#wishlist { display: none; }
 textarea {
 width: 90%;
 max-width: 320px;
 height: 80px;
-border-radius: 12px;
+border-radius: 14px;
 border: none;
 padding: 10px;
-margin: 10px 0;
+margin: 8px 0;
 }
 
 /* CAMERA */
@@ -149,12 +152,11 @@ max-width: 320px;
 border-radius: 18px;
 }
 
-/* RESULT */
 img {
 width: 90%;
 max-width: 360px;
-border-radius: 20px;
-box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+border-radius: 22px;
+box-shadow: 0 15px 40px rgba(0,0,0,0.45);
 }
 </style>
 </head>
@@ -182,23 +184,23 @@ box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 </div>
 
 <button onclick="nextCard()">Kartu Berikutnya</button>
+<div id="counter">Kartu 0 / 10</div>
 <div id="message"></div>
 
-<!-- WISHLIST -->
 <div id="wishlist">
 <h2>Wishlist 2026 🤍</h2>
 <textarea id="rahmat" placeholder="Rahmat ingin..."></textarea>
-<textarea id="finka" placeholder="Finka ingin..."></textarea>
-<br>
+<textarea id="finka" placeholder="Finka ingin..."></textarea><br>
 <button onclick="startCamera()">Aamiin 🤍</button>
 </div>
+</div>
+</div>
 
-</div>
-</div>
+<div class="clock" id="clock">00:00:00</div>
 
 <!-- CAMERA -->
 <div id="cameraScreen">
-<h2>📸 Satu Foto untuk Mengingat Doa Ini</h2>
+<h2>📸 Simpan Doa Kita</h2>
 <video id="video" autoplay playsinline></video><br><br>
 <button onclick="takePhoto()">Ambil Foto</button>
 </div>
@@ -227,79 +229,100 @@ const questions = [
 "Satu harapan jujur untuk kita tahun depan?"
 ];
 
-let index = 0;
+let i = 0;
 let stream;
 
-function start() {
-document.getElementById("opening").style.display = "none";
-document.getElementById("main").style.display = "flex";
+/* OPEN */
+function start(){
+document.getElementById("opening").style.display="none";
+document.getElementById("main").style.display="flex";
 }
 
-function flipCard() {
-document.querySelector('.card').classList.toggle('flip');
+/* CARD */
+function flipCard(){
+document.querySelector(".card").classList.toggle("flip");
 }
 
-function nextCard() {
-document.querySelector('.card').classList.remove('flip');
-document.getElementById("question").innerText = questions[index];
+function nextCard(){
+document.querySelector(".card").classList.remove("flip");
+document.getElementById("question").innerText = questions[i];
+document.getElementById("counter").innerText = `Kartu ${i+1} / 10`;
 
-if (index === 2) document.getElementById("message").innerText =
-"🤍 Pegangan tangan 10 detik";
-else if (index === 6) document.getElementById("message").innerText =
-"😊 Patpat kepala 3 kali";
-else document.getElementById("message").innerText = "";
+if(i===2) message.innerText="🤍 Pegangan tangan 10 detik";
+else if(i===6) message.innerText="😊 Patpat kepala 3 kali";
+else message.innerText="";
 
-index++;
-
-if (index === questions.length) {
-setTimeout(() => {
-document.getElementById("wishlist").style.display = "block";
-}, 800);
-}
+i++;
+if(i===10) setTimeout(()=>wishlist.style.display="block",800);
 }
 
-function startCamera() {
-document.getElementById("main").style.display = "none";
-document.getElementById("cameraScreen").style.display = "block";
+/* CLOCK */
+setInterval(()=>{
+const d=new Date();
+clock.innerText=
+`${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
+},1000);
 
-navigator.mediaDevices.getUserMedia({
-video: { facingMode: "user" }
-}).then(s => {
-stream = s;
-video.srcObject = s;
-});
+/* CAMERA */
+function startCamera(){
+main.style.display="none";
+cameraScreen.style.display="block";
+navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}})
+.then(s=>{stream=s;video.srcObject=s;});
 }
 
-function takePhoto() {
-const c = document.getElementById("canvas");
-const ctx = c.getContext("2d");
-c.width = 1080;
-c.height = 1350;
+function takePhoto(){
+const c=canvas,ctx=c.getContext("2d");
+c.width=1080;c.height=1350;
 
-ctx.fillStyle = "#fff";
+/* Gradient bg */
+const g=ctx.createLinearGradient(0,0,0,c.height);
+g.addColorStop(0,"#1c1b3a");
+g.addColorStop(1,"#3a2c5b");
+ctx.fillStyle=g;
 ctx.fillRect(0,0,c.width,c.height);
-ctx.drawImage(video,190,80,700,700);
+
+/* Stars */
+for(let j=0;j<60;j++){
+ctx.fillStyle="rgba(255,255,255,0.8)";
+ctx.beginPath();
+ctx.arc(Math.random()*1080,Math.random()*600,1.5,0,Math.PI*2);
+ctx.fill();
+}
+
+/* Moon */
+ctx.fillStyle="#fff";
+ctx.beginPath();
+ctx.arc(900,120,50,0,Math.PI*2);
+ctx.fill();
+
+/* Photo */
+ctx.save();
+ctx.beginPath();
+ctx.roundRect(190,200,700,700,30);
+ctx.clip();
+ctx.drawImage(video,190,200,700,700);
+ctx.restore();
+
+/* Text */
+ctx.fillStyle="#fff";
+ctx.font="bold 42px Poppins";
+ctx.textAlign="center";
+ctx.fillText("Wishlist Kita 2026",540,980);
+
+ctx.font="28px Poppins";
+ctx.textAlign="left";
+ctx.fillText("Rahmat:",200,1040);
+ctx.fillText(rahmat.value,200,1080);
+ctx.fillText("Finka:",200,1140);
+ctx.fillText(finka.value,200,1180);
 
 stream.getTracks().forEach(t=>t.stop());
+finalImg.src=c.toDataURL();
+download.href=finalImg.src;
 
-ctx.fillStyle = "#333";
-ctx.font = "bold 40px Poppins";
-ctx.textAlign = "center";
-ctx.fillText("Wishlist Kita 2026", 540, 830);
-
-ctx.font = "28px Poppins";
-ctx.textAlign = "left";
-ctx.fillText("Rahmat:",140,900);
-ctx.fillText(document.getElementById("rahmat").value,140,940);
-ctx.fillText("Finka:",140,1020);
-ctx.fillText(document.getElementById("finka").value,140,1060);
-
-const img = c.toDataURL();
-document.getElementById("finalImg").src = img;
-document.getElementById("download").href = img;
-
-document.getElementById("cameraScreen").style.display = "none";
-document.getElementById("resultScreen").style.display = "block";
+cameraScreen.style.display="none";
+resultScreen.style.display="block";
 }
 </script>
 
