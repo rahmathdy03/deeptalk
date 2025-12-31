@@ -202,8 +202,7 @@ box-shadow: 0 15px 40px rgba(0,0,0,0.45);
 <div id="cameraScreen">
 <h2>📸 Simpan Doa Kita</h2>
 <video id="video" autoplay playsinline></video><br><br>
-<button onclick="takePhotoMulti()">Ambil Foto</button>
-<p id="photoInfo">Foto 1 dari 3</p>
+<button onclick="takePhoto()">Ambil Foto</button>
 </div>
 
 <!-- RESULT -->
@@ -235,8 +234,8 @@ let stream;
 
 /* OPEN */
 function start(){
-opening.style.display="none";
-main.style.display="flex";
+document.getElementById("opening").style.display="none";
+document.getElementById("main").style.display="flex";
 }
 
 /* CARD */
@@ -246,8 +245,8 @@ document.querySelector(".card").classList.toggle("flip");
 
 function nextCard(){
 document.querySelector(".card").classList.remove("flip");
-question.innerText = questions[i];
-counter.innerText = `Kartu ${i+1} / 10`;
+document.getElementById("question").innerText = questions[i];
+document.getElementById("counter").innerText = `Kartu ${i+1} / 10`;
 
 if(i===2) message.innerText="🤍 Pegangan tangan 10 detik";
 else if(i===6) message.innerText="😊 Patpat kepala 3 kali";
@@ -265,9 +264,6 @@ clock.innerText=
 },1000);
 
 /* CAMERA */
-let photoCount = 0;
-const photos = [];
-
 function startCamera(){
 main.style.display="none";
 cameraScreen.style.display="block";
@@ -275,66 +271,63 @@ navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}})
 .then(s=>{stream=s;video.srcObject=s;});
 }
 
-function takePhotoMulti(){
-const temp=document.createElement("canvas");
-temp.width=480;
-temp.height=640;
-temp.getContext("2d").drawImage(video,0,0,480,640);
-photos.push(temp);
-photoCount++;
-photoInfo.innerText=`Foto ${photoCount} dari 3`;
+function takePhoto(){
+const c=canvas,ctx=c.getContext("2d");
+c.width=1080;c.height=1350;
 
-if(photoCount===3){
-stream.getTracks().forEach(t=>t.stop());
-renderFinal();
+/* Gradient bg */
+const g=ctx.createLinearGradient(0,0,0,c.height);
+g.addColorStop(0,"#1c1b3a");
+g.addColorStop(1,"#3a2c5b");
+ctx.fillStyle=g;
+ctx.fillRect(0,0,c.width,c.height);
+
+/* Stars */
+for(let j=0;j<60;j++){
+ctx.fillStyle="rgba(255,255,255,0.8)";
+ctx.beginPath();
+ctx.arc(Math.random()*1080,Math.random()*600,1.5,0,Math.PI*2);
+ctx.fill();
 }
-}
 
-function renderFinal(){
-cameraScreen.style.display="none";
-resultScreen.style.display="block";
+/* Moon */
+ctx.fillStyle="#fff";
+ctx.beginPath();
+ctx.arc(900,120,50,0,Math.PI*2);
+ctx.fill();
 
-const bg=new Image();
-bg.src="pb.jpg";
-
-bg.onload=()=>{
-canvas.width=bg.width;
-canvas.height=bg.height;
-const ctx=canvas.getContext("2d");
-ctx.drawImage(bg,0,0);
-
-const frames=[
-{x:80,y:140,w:920,h:320},
-{x:80,y:520,w:920,h:320},
-{x:80,y:900,w:920,h:320}
-];
-
-photos.forEach((p,i)=>{
+/* Photo */
 ctx.save();
 ctx.beginPath();
-ctx.roundRect(frames[i].x,frames[i].y,frames[i].w,frames[i].h,28);
+ctx.roundRect(190,200,700,700,30);
 ctx.clip();
-ctx.drawImage(p,frames[i].x,frames[i].y,frames[i].w,frames[i].h);
+ctx.drawImage(video,190,200,700,700);
 ctx.restore();
-});
 
-ctx.fillStyle="#4a4a4a";
+/* Text */
+ctx.fillStyle="#fff";
 ctx.font="bold 42px Poppins";
 ctx.textAlign="center";
-ctx.fillText("Wishlist Kita 2026",canvas.width/2,1300);
+ctx.fillText("Wishlist Kita 2026",540,980);
 
-ctx.font="30px Poppins";
+ctx.font="28px Poppins";
 ctx.textAlign="left";
-ctx.fillText("Rahmat:",100,1360);
-ctx.fillText(rahmat.value,100,1400);
-ctx.fillText("Finka:",100,1500);
-ctx.fillText(finka.value,100,1540);
+ctx.fillText("Rahmat:",200,1040);
+ctx.fillText(rahmat.value,200,1080);
+ctx.fillText("Finka:",200,1140);
+ctx.fillText(finka.value,200,1180);
 
-finalImg.src=canvas.toDataURL();
+stream.getTracks().forEach(t=>t.stop());
+finalImg.src=c.toDataURL();
 download.href=finalImg.src;
-};
+
+cameraScreen.style.display="none";
+resultScreen.style.display="block";
 }
 </script>
 
 </body>
 </html>
+
+
+ini koding aku, tolong tambahka, jangan ada yg diubah di coding ini
