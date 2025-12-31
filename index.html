@@ -6,6 +6,8 @@
 <title>DeepTalk Night ✨</title>
 
 <style>
+* { box-sizing: border-box; }
+
 body {
 margin: 0;
 height: 100vh;
@@ -14,39 +16,33 @@ color: #fff;
 overflow: hidden;
 }
 
-/* ===== INTRO ===== */
-.intro {
+/* ===== OPENING ===== */
+#opening {
 position: fixed;
 inset: 0;
 background:
 linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
 url('bgawal.jpg') center/cover no-repeat;
 display: flex;
-flex-direction: column;
 justify-content: center;
 align-items: center;
 text-align: center;
 z-index: 10;
-backdrop-filter: blur(6px);
 }
 
-.intro h1 {
-font-size: 1.8rem;
-margin-bottom: 20px;
-}
-
-.intro button {
+#opening button {
+margin-top: 24px;
 padding: 12px 28px;
-border-radius: 30px;
 border: none;
+border-radius: 30px;
 font-size: 1rem;
-cursor: pointer;
-background: linear-gradient(135deg, #ffecd2, #fcb69f);
+background: #fff;
 color: #333;
+cursor: pointer;
 }
 
 /* ===== MAIN ===== */
-.main {
+#main {
 display: none;
 height: 100vh;
 background:
@@ -60,10 +56,9 @@ align-items: center;
 .container {
 text-align: center;
 padding: 20px;
-backdrop-filter: blur(4px);
 }
 
-/* ===== CARD ===== */
+/* CARD */
 .card {
 width: 300px;
 height: 190px;
@@ -82,13 +77,6 @@ transition: transform 0.8s;
 
 .card.flip .card-inner {
 transform: rotateY(180deg);
-animation: jump 0.6s ease;
-}
-
-@keyframes jump {
-0% { transform: translateY(0) rotateY(0); }
-40% { transform: translateY(-25px) rotateY(90deg); }
-100% { transform: translateY(0) rotateY(180deg); }
 }
 
 .card-face {
@@ -101,165 +89,218 @@ display: flex;
 align-items: center;
 justify-content: center;
 padding: 18px;
-box-sizing: border-box;
-box-shadow: 0 15px 35px rgba(0,0,0,0.45);
+box-shadow: 0 15px 35px rgba(0,0,0,0.4);
 }
 
 .front {
 background: linear-gradient(135deg, #ffafbd, #ffc3a0);
-color: #3a2c2c;
-font-size: 1.15rem;
+color: #333;
 font-weight: 600;
 }
 
 .back {
 background: linear-gradient(135deg, #667eea, #764ba2);
-color: #fff;
 transform: rotateY(180deg);
-font-size: 1rem;
-line-height: 1.4;
 }
 
-/* ===== BUTTON ===== */
+/* BUTTON */
 button {
-margin-top: 10px;
 padding: 10px 22px;
 border: none;
 border-radius: 25px;
-background: linear-gradient(135deg, #f6d365, #fda085);
+background: #fff;
 color: #333;
-font-size: 0.95rem;
 cursor: pointer;
-box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+margin-top: 10px;
 }
 
-/* ===== CLOCK ===== */
-.clock {
-position: fixed;
-bottom: 16px;
-right: 16px;
-padding: 10px 16px;
-border-radius: 14px;
-background: rgba(0,0,0,0.55);
-font-family: 'Courier New', monospace;
-font-size: 1.1rem;
-letter-spacing: 2px;
-color: #ffd36e;
-}
-
-/* ===== MESSAGE ===== */
-.message {
-margin-top: 15px;
+/* MESSAGE */
+#message {
+margin-top: 16px;
 font-size: 1rem;
 color: #ffd36e;
+}
+
+/* WISHLIST */
+#wishlist {
 display: none;
+}
+
+textarea {
+width: 90%;
+max-width: 320px;
+height: 80px;
+border-radius: 12px;
+border: none;
+padding: 10px;
+margin: 10px 0;
+}
+
+/* CAMERA */
+#cameraScreen, #resultScreen {
+display: none;
+text-align: center;
+padding: 20px;
+}
+
+video {
+width: 90%;
+max-width: 320px;
+border-radius: 18px;
+}
+
+/* RESULT */
+img {
+width: 90%;
+max-width: 360px;
+border-radius: 20px;
+box-shadow: 0 10px 30px rgba(0,0,0,0.4);
 }
 </style>
 </head>
 
 <body>
 
-<!-- INTRO -->
-<div class="intro" id="intro">
-<h1>🌙 Malam ini cuma tentang kita</h1>
-<button onclick="startNight()">Tap to Start</button>
+<!-- OPENING -->
+<div id="opening">
+  <div>
+    <h1>Malam ini cuma tentang kita</h1>
+    <button onclick="start()">Tap to Start</button>
+  </div>
 </div>
 
 <!-- MAIN -->
-<div class="main" id="main">
+<div id="main">
 <div class="container">
-<h2>DeepTalk Night</h2>
-<p>Ambil satu kartu, jawab dengan jujur</p>
+<h1>🌙 DeepTalk Night</h1>
 
 <div class="card" onclick="flipCard()">
-<div class="card-inner">
-<div class="card-face front">🎴 Tap untuk membuka</div>
-<div class="card-face back" id="question">...</div>
+  <div class="card-inner">
+    <div class="card-face front">🎴 Tap untuk membuka</div>
+    <div class="card-face back" id="question">...</div>
+  </div>
+</div>
+
+<button onclick="nextCard()">Kartu Berikutnya</button>
+<div id="message"></div>
+
+<!-- WISHLIST -->
+<div id="wishlist">
+<h2>Wishlist 2026 🤍</h2>
+<textarea id="rahmat" placeholder="Rahmat ingin..."></textarea>
+<textarea id="finka" placeholder="Finka ingin..."></textarea>
+<br>
+<button onclick="startCamera()">Aamiin 🤍</button>
+</div>
+
 </div>
 </div>
 
-<div class="message" id="message"></div>
-<button onclick="newCard()">Kartu Berikutnya</button>
-</div>
+<!-- CAMERA -->
+<div id="cameraScreen">
+<h2>📸 Satu Foto untuk Mengingat Doa Ini</h2>
+<video id="video" autoplay playsinline></video><br><br>
+<button onclick="takePhoto()">Ambil Foto</button>
 </div>
 
-<div class="clock" id="clock">00:00:00</div>
-
-<audio id="bgm"></audio>
+<!-- RESULT -->
+<canvas id="canvas" style="display:none"></canvas>
+<div id="resultScreen">
+<h2>Wishlist Kita 2026</h2>
+<img id="finalImg"><br><br>
+<a id="download" download="wishlist-2026.png">
+<button>Simpan Kenangan</button>
+</a>
+</div>
 
 <script>
-/* ===== INTRO START ===== */
-function startNight() {
-document.getElementById("intro").style.display = "none";
-document.getElementById("main").style.display = "flex";
-audio.play();
-}
-
-/* ===== QUESTIONS ===== */
 const questions = [
 "Momen apa dari kita yang paling ingin kamu ulang di tahun depan?",
-"Hal kecil apa dariku yang diam-diam paling kamu hargai?",
-"Di hubungan ini, kapan kamu merasa paling tenang sama aku?",
-"Apa satu hal tentang aku yang baru kamu sadari setelah kita pacaran?",
-"Kalau aku lagi capek atau bad mood, hal apa yang paling kamu harapin dari aku?",
-"Menurut kamu, apa kekuatan terbesar hubungan kita sejauh ini?",
-"Hal apa yang ingin kamu perbaiki atau kita pelajari bareng di tahun baru?",
-"Pernah nggak kamu takut kehilangan aku? Di situasi seperti apa?",
-"Apa arti komitmen buat kamu di tahap hubungan kita sekarang?",
-"Satu harapan paling jujur yang ingin kamu titipkan untuk kita di tahun depan?"
+"Hal kecil apa dariku yang paling kamu hargai?",
+"Kapan kamu merasa paling tenang sama aku?",
+"Apa hal tentang aku yang baru kamu sadari?",
+"Apa yang paling kamu harapkan dariku saat capek?",
+"Apa kekuatan terbesar hubungan kita?",
+"Apa yang ingin kita perbaiki di tahun baru?",
+"Pernah takut kehilangan aku?",
+"Apa arti komitmen buat kamu sekarang?",
+"Satu harapan jujur untuk kita tahun depan?"
 ];
 
-let used = 0;
+let index = 0;
+let stream;
+
+function start() {
+document.getElementById("opening").style.display = "none";
+document.getElementById("main").style.display = "flex";
+}
 
 function flipCard() {
 document.querySelector('.card').classList.toggle('flip');
 }
 
-function newCard() {
-if (used >= questions.length) return;
-
-used++;
+function nextCard() {
 document.querySelector('.card').classList.remove('flip');
+document.getElementById("question").innerText = questions[index];
 
+if (index === 2) document.getElementById("message").innerText =
+"🤍 Pegangan tangan 10 detik";
+else if (index === 6) document.getElementById("message").innerText =
+"😊 Patpat kepala 3 kali";
+else document.getElementById("message").innerText = "";
+
+index++;
+
+if (index === questions.length) {
 setTimeout(() => {
-document.getElementById("question").innerText = questions[used - 1];
-}, 300);
-
-const msg = document.getElementById("message");
-msg.style.display = "none";
-
-if (used === 3) {
-msg.innerText = "Sebelum lanjut, pegangan tangan selama 10 detik 🤍";
-msg.style.display = "block";
-}
-
-if (used === 7) {
-msg.innerText = "Sekarang patpat kepala pasanganmu 3 kali 🤍";
-msg.style.display = "block";
+document.getElementById("wishlist").style.display = "block";
+}, 800);
 }
 }
 
-/* ===== CLOCK ===== */
-setInterval(() => {
-const d = new Date();
-clock.innerText =
-`${String(d.getHours()).padStart(2,'0')}:` +
-`${String(d.getMinutes()).padStart(2,'0')}:` +
-`${String(d.getSeconds()).padStart(2,'0')}`;
-}, 1000);
+function startCamera() {
+document.getElementById("main").style.display = "none";
+document.getElementById("cameraScreen").style.display = "block";
 
-/* ===== BACKSOUND ===== */
-const playlist = ["1.mp3","2.mp3","3.mp3"];
-let idx = 0;
-const audio = document.getElementById("bgm");
-audio.volume = 0.4;
-audio.src = playlist[idx];
-
-audio.addEventListener("ended", () => {
-idx = (idx + 1) % playlist.length;
-audio.src = playlist[idx];
-audio.play();
+navigator.mediaDevices.getUserMedia({
+video: { facingMode: "user" }
+}).then(s => {
+stream = s;
+video.srcObject = s;
 });
+}
+
+function takePhoto() {
+const c = document.getElementById("canvas");
+const ctx = c.getContext("2d");
+c.width = 1080;
+c.height = 1350;
+
+ctx.fillStyle = "#fff";
+ctx.fillRect(0,0,c.width,c.height);
+ctx.drawImage(video,190,80,700,700);
+
+stream.getTracks().forEach(t=>t.stop());
+
+ctx.fillStyle = "#333";
+ctx.font = "bold 40px Poppins";
+ctx.textAlign = "center";
+ctx.fillText("Wishlist Kita 2026", 540, 830);
+
+ctx.font = "28px Poppins";
+ctx.textAlign = "left";
+ctx.fillText("Rahmat:",140,900);
+ctx.fillText(document.getElementById("rahmat").value,140,940);
+ctx.fillText("Finka:",140,1020);
+ctx.fillText(document.getElementById("finka").value,140,1060);
+
+const img = c.toDataURL();
+document.getElementById("finalImg").src = img;
+document.getElementById("download").href = img;
+
+document.getElementById("cameraScreen").style.display = "none";
+document.getElementById("resultScreen").style.display = "block";
+}
 </script>
 
 </body>
