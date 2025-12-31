@@ -9,15 +9,52 @@
 body {
 margin: 0;
 height: 100vh;
+font-family: 'Poppins', sans-serif;
+color: #fff;
+overflow: hidden;
+}
+
+/* ===== INTRO ===== */
+.intro {
+position: fixed;
+inset: 0;
+background:
+linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
+url('bgawal.jpg') center/cover no-repeat;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+text-align: center;
+z-index: 10;
+backdrop-filter: blur(6px);
+}
+
+.intro h1 {
+font-size: 1.8rem;
+margin-bottom: 20px;
+}
+
+.intro button {
+padding: 12px 28px;
+border-radius: 30px;
+border: none;
+font-size: 1rem;
+cursor: pointer;
+background: linear-gradient(135deg, #ffecd2, #fcb69f);
+color: #333;
+}
+
+/* ===== MAIN ===== */
+.main {
+display: none;
+height: 100vh;
 background:
 linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.55)),
 url('bg.jpg') center/cover no-repeat;
 display: flex;
 justify-content: center;
 align-items: center;
-font-family: 'Poppins', sans-serif;
-color: #fff;
-overflow: hidden;
 }
 
 .container {
@@ -96,10 +133,6 @@ cursor: pointer;
 box-shadow: 0 6px 15px rgba(0,0,0,0.3);
 }
 
-button:active {
-transform: scale(0.96);
-}
-
 /* ===== CLOCK ===== */
 .clock {
 position: fixed;
@@ -108,42 +141,60 @@ right: 16px;
 padding: 10px 16px;
 border-radius: 14px;
 background: rgba(0,0,0,0.55);
-backdrop-filter: blur(6px);
 font-family: 'Courier New', monospace;
 font-size: 1.1rem;
 letter-spacing: 2px;
 color: #ffd36e;
-box-shadow: 0 0 15px rgba(255,211,110,0.5);
+}
+
+/* ===== MESSAGE ===== */
+.message {
+margin-top: 15px;
+font-size: 1rem;
+color: #ffd36e;
+display: none;
 }
 </style>
 </head>
 
 <body>
 
+<!-- INTRO -->
+<div class="intro" id="intro">
+<h1>🌙 Malam ini cuma tentang kita</h1>
+<button onclick="startNight()">Tap to Start</button>
+</div>
+
+<!-- MAIN -->
+<div class="main" id="main">
 <div class="container">
-<h1>🌙 DeepTalk Night</h1>
+<h2>DeepTalk Night</h2>
 <p>Ambil satu kartu, jawab dengan jujur</p>
 
 <div class="card" onclick="flipCard()">
 <div class="card-inner">
-<div class="card-face front">
-🎴 Tap untuk membuka
-</div>
-<div class="card-face back" id="question">
-...
-</div>
+<div class="card-face front">🎴 Tap untuk membuka</div>
+<div class="card-face back" id="question">...</div>
 </div>
 </div>
 
+<div class="message" id="message"></div>
 <button onclick="newCard()">Kartu Berikutnya</button>
+</div>
 </div>
 
 <div class="clock" id="clock">00:00:00</div>
 
-<!-- BACKSOUND -->
-<audio id="bgm" preload="auto"></audio>
+<audio id="bgm"></audio>
 
 <script>
+/* ===== INTRO START ===== */
+function startNight() {
+document.getElementById("intro").style.display = "none";
+document.getElementById("main").style.display = "flex";
+audio.play();
+}
+
 /* ===== QUESTIONS ===== */
 const questions = [
 "Momen apa dari kita yang paling ingin kamu ulang di tahun depan?",
@@ -158,59 +209,57 @@ const questions = [
 "Satu harapan paling jujur yang ingin kamu titipkan untuk kita di tahun depan?"
 ];
 
-let usedQuestions = [];
+let used = 0;
 
 function flipCard() {
 document.querySelector('.card').classList.toggle('flip');
 }
 
 function newCard() {
-if (usedQuestions.length === questions.length) {
-usedQuestions = [];
+if (used >= questions.length) return;
+
+used++;
+document.querySelector('.card').classList.remove('flip');
+
+setTimeout(() => {
+document.getElementById("question").innerText = questions[used - 1];
+}, 300);
+
+const msg = document.getElementById("message");
+msg.style.display = "none";
+
+if (used === 3) {
+msg.innerText = "Sebelum lanjut, pegangan tangan selama 10 detik 🤍";
+msg.style.display = "block";
 }
 
-let q;
-do {
-q = questions[Math.floor(Math.random() * questions.length)];
-} while (usedQuestions.includes(q));
-
-usedQuestions.push(q);
-
-document.querySelector('.card').classList.remove('flip');
-setTimeout(() => {
-document.getElementById('question').innerText = q;
-}, 350);
+if (used === 7) {
+msg.innerText = "Sekarang patpat kepala pasanganmu 3 kali 🤍";
+msg.style.display = "block";
+}
 }
 
 /* ===== CLOCK ===== */
-function updateClock() {
-const now = new Date();
-const h = String(now.getHours()).padStart(2, '0');
-const m = String(now.getMinutes()).padStart(2, '0');
-const s = String(now.getSeconds()).padStart(2, '0');
-document.getElementById('clock').innerText = `${h}:${m}:${s}`;
-}
-setInterval(updateClock, 1000);
-updateClock();
+setInterval(() => {
+const d = new Date();
+clock.innerText =
+`${String(d.getHours()).padStart(2,'0')}:` +
+`${String(d.getMinutes()).padStart(2,'0')}:` +
+`${String(d.getSeconds()).padStart(2,'0')}`;
+}, 1000);
 
 /* ===== BACKSOUND ===== */
-const playlist = ["1.mp3", "2.mp3", "3.mp3"];
-let currentTrack = 0;
+const playlist = ["1.mp3","2.mp3","3.mp3"];
+let idx = 0;
 const audio = document.getElementById("bgm");
-
 audio.volume = 0.4;
-audio.src = playlist[currentTrack];
+audio.src = playlist[idx];
 
 audio.addEventListener("ended", () => {
-currentTrack = (currentTrack + 1) % playlist.length;
-audio.src = playlist[currentTrack];
+idx = (idx + 1) % playlist.length;
+audio.src = playlist[idx];
 audio.play();
 });
-
-// autoplay after first interaction (mobile safe)
-document.body.addEventListener("click", () => {
-if (audio.paused) audio.play();
-}, { once: true });
 </script>
 
 </body>
