@@ -37,6 +37,15 @@ border-radius: 30px;
 border: none;
 font-size: 1rem;
 cursor: pointer;
+
+/* ✅ TAMBAHAN WARNA (INI SAJA) */
+background: linear-gradient(135deg, #f6d365, #fda085);
+color: #333;
+box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+#opening button:active {
+transform: scale(0.96);
 }
 
 /* ===== MAIN ===== */
@@ -232,21 +241,19 @@ const questions = [
 let i = 0;
 let stream;
 
-/* OPEN */
 function start(){
-document.getElementById("opening").style.display="none";
-document.getElementById("main").style.display="flex";
+opening.style.display="none";
+main.style.display="flex";
 }
 
-/* CARD */
 function flipCard(){
 document.querySelector(".card").classList.toggle("flip");
 }
 
 function nextCard(){
 document.querySelector(".card").classList.remove("flip");
-document.getElementById("question").innerText = questions[i];
-document.getElementById("counter").innerText = `Kartu ${i+1} / 10`;
+question.innerText = questions[i];
+counter.innerText = `Kartu ${i+1} / 10`;
 
 if(i===2) message.innerText="🤍 Pegangan tangan 10 detik";
 else if(i===6) message.innerText="😊 Patpat kepala 3 kali";
@@ -256,14 +263,12 @@ i++;
 if(i===10) setTimeout(()=>wishlist.style.display="block",800);
 }
 
-/* CLOCK */
 setInterval(()=>{
 const d=new Date();
 clock.innerText=
 `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}:${String(d.getSeconds()).padStart(2,'0')}`;
 },1000);
 
-/* CAMERA */
 function startCamera(){
 main.style.display="none";
 cameraScreen.style.display="block";
@@ -275,14 +280,12 @@ function takePhoto(){
 const c=canvas,ctx=c.getContext("2d");
 c.width=1080;c.height=1350;
 
-/* Gradient bg */
 const g=ctx.createLinearGradient(0,0,0,c.height);
 g.addColorStop(0,"#1c1b3a");
 g.addColorStop(1,"#3a2c5b");
 ctx.fillStyle=g;
 ctx.fillRect(0,0,c.width,c.height);
 
-/* Stars */
 for(let j=0;j<60;j++){
 ctx.fillStyle="rgba(255,255,255,0.8)";
 ctx.beginPath();
@@ -290,13 +293,11 @@ ctx.arc(Math.random()*1080,Math.random()*600,1.5,0,Math.PI*2);
 ctx.fill();
 }
 
-/* Moon */
 ctx.fillStyle="#fff";
 ctx.beginPath();
 ctx.arc(900,120,50,0,Math.PI*2);
 ctx.fill();
 
-/* Photo */
 ctx.save();
 ctx.beginPath();
 ctx.roundRect(190,200,700,700,30);
@@ -304,7 +305,6 @@ ctx.clip();
 ctx.drawImage(video,190,200,700,700);
 ctx.restore();
 
-/* Text */
 ctx.fillStyle="#fff";
 ctx.font="bold 42px Poppins";
 ctx.textAlign="center";
@@ -328,6 +328,3 @@ resultScreen.style.display="block";
 
 </body>
 </html>
-
-
-ini koding aku, tolong tambahka, jangan ada yg diubah di coding ini
