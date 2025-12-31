@@ -37,8 +37,6 @@ border-radius: 30px;
 border: none;
 font-size: 1rem;
 cursor: pointer;
-
-/* ✅ TAMBAHAN WARNA (INI SAJA) */
 background: linear-gradient(135deg, #f6d365, #fda085);
 color: #333;
 box-shadow: 0 8px 20px rgba(0,0,0,0.35);
@@ -172,6 +170,9 @@ box-shadow: 0 15px 40px rgba(0,0,0,0.45);
 
 <body>
 
+<!-- ===== BACKSOUND (TAMBAHAN) ===== -->
+<audio id="bgm"></audio>
+
 <!-- OPENING -->
 <div id="opening">
   <div>
@@ -241,9 +242,27 @@ const questions = [
 let i = 0;
 let stream;
 
+/* ===== BACKSOUND SCRIPT (TAMBAHAN) ===== */
+const playlist = ["1.mp3", "2.mp3", "3.mp3"];
+let track = 0;
+const bgm = document.getElementById("bgm");
+bgm.volume = 0.35;
+
+function playMusic(){
+  bgm.src = playlist[track];
+  bgm.play();
+}
+
+bgm.addEventListener("ended", () => {
+  track = (track + 1) % playlist.length;
+  playMusic();
+});
+/* ===== END BACKSOUND ===== */
+
 function start(){
 opening.style.display="none";
 main.style.display="flex";
+playMusic(); // mulai backsound
 }
 
 function flipCard(){
